@@ -17,6 +17,56 @@ const HTML_OUTPUT = document.getElementById("databaseOutput");
 // The ref('/') part tells the operation to write to the base level of the database "/"
 // This means it replaces the whole database with message:Hello World
 /**************************************************************/
+
+let user = "fourth_user";
+let score = 8;
+
+function addHighScores() {
+  console.log("adding high scores")
+  highscoreTable = {
+    game1: {
+      users: {
+        Nina: 12,
+        second_user: 1,
+        third_user: 3
+      }
+    }
+  }
+
+  firebase.database().ref("/").set(highscoreTable);
+}
+
+function addUser() {
+  firebase.database().ref("game1/users/" + user).set(score);
+}
+
+function fb_readHighScores() {
+  console.log("reading high scores");
+  firebase.database().ref("game1/users").once("value", fb_displayHighScores, fb_readError)
+}
+
+function fb_displayHighScores(snapshot) {
+  let highScores = snapshot.val()
+  HTML_OUTPUT.innerHTML = ("Nina got " + highScores["Nina"] + " points");
+
+}
+
+function fb_readAllScores() {
+  console.log("reading high scores");
+  firebase.database().ref("game1/users").once("value", fb_displayAllScores, fb_readError)
+
+}
+
+function fb_displayAllScores(snapshot) {
+  let highScores = snapshot.val();
+  let names = Object.keys(highScores);
+  console.log("Displaying all scores: ");
+  for (i = 0; i < names.length; i++) {
+    let key = names[i];
+    console.log("Score " + i + " is for " + key + ". They got " + highScores[key] + " points.");
+  }
+}
+
 function helloWorld() {
   console.log("Running helloWorld()")
   firebase.database().ref('/').set(
