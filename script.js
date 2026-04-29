@@ -27,8 +27,8 @@ function addHighScores() {
     game1: {
       users: {
         Nina: 12,
-        second_user: 1,
-        third_user: 3
+        ["second user"]: 1,
+        ["third user"]: 3
       }
     }
   }
@@ -40,32 +40,51 @@ function addUser() {
   firebase.database().ref("game1/users/" + user).set(score);
 }
 
-function fb_readHighScores() {
-  console.log("reading high scores");
-  firebase.database().ref("game1/users").once("value", fb_displayHighScores, fb_readError)
+function fb_readHighScore() {
+  console.log("reading high score");
+  firebase.database().ref("game1/users").orderByValue().limitToLast(1).once("value", fb_displayHighScore, fb_readError)
 }
 
-function fb_displayHighScores(snapshot) {
+function fb_displayHighScore(snapshot) {
   let highScores = snapshot.val()
-  HTML_OUTPUT.innerHTML = ("Nina got " + highScores["Nina"] + " points");
-
+  HTML_OUTPUT.innerHTML += ("Nina got " + highScores["Nina"] + " points");
 }
 
 function fb_readAllScores() {
   console.log("reading high scores");
-  firebase.database().ref("game1/users").once("value", fb_displayAllScores, fb_readError)
-
+  firebase.database().ref("game1/users").orderByValue().once("value", fb_displayAllScores, fb_readError)
 }
 
 function fb_displayAllScores(snapshot) {
-  let highScores = snapshot.val();
-  let names = Object.keys(highScores);
-  console.log("Displaying all scores: ");
-  for (i = 0; i < names.length; i++) {
-    let key = names[i];
-    console.log("Score " + i + " is for " + key + ". They got " + highScores[key] + " points.");
-  }
+  snapshot.forEach(fb_showOneScore)
 }
+
+function fb_showOneScore(child) {
+  console.log(child.val());
+  HTML_OUTPUT.innerHTML += "<p>" + child.key + " got " + child.val() + " points </p>";
+}
+
+function fb_login() {
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      console.log("logged in");
+      console.log(user)
+      var uid = user.uid;
+    } else {
+      console.log("Not logged in");
+      // Using a popup.
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(function (result) {
+        // This gives you a Google Access Token.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+      });
+    }
+  });
+}
+
+
 
 function helloWorld() {
   console.log("Running helloWorld()")
@@ -120,3 +139,4 @@ function fb_logDatabaseRead(snapshot) {
     HTML_OUTPUT.innerHTML = snapshot.val();
   }
 }
+
