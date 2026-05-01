@@ -29,11 +29,8 @@
   All of the output from firebase goes to the console, open it up now (ctrl - shift - i)
 
   <h2>Hello world - a minimal write</h2>
-  <p>This button overwrites your entire database with the key/value pair Message : "Hello World" using the <a
-      href="https://firebase.google.com/docs/database/web/read-and-write#basic_write">set()</a> operation. Look in
-    firebase to see the effect.</p>
-  <p> Task 1: change the message in fb_helloWorld() to "Kia ora te ao"</p>
-  <p> Task 2: create another button that changes the message to "Goodbye/ka kite āno"</p>
+  <p id="welcome">Welcome</p>
+  <img id="profilePhoto" src="">
   <button onclick="helloWorld()">Hello world</button>
   <button onclick="goodbye()">Goodbye!</button>
   <button onclick="simpleRead()">Read message</button>
@@ -42,7 +39,7 @@
   <button onclick="addUser()">add user</button>
   <button onclick="fb_readHighScore()">read one score</button>
   <button onclick="fb_readAllScores()">read all scores</button>
-  <button onclick="fb_login()">login</button>
+  <button onclick="fb_login()">login with google</button>
 
 
   <h2>Output</h2>

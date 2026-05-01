@@ -26,9 +26,15 @@ function addHighScores() {
   highscoreTable = {
     game1: {
       users: {
-        Nina: 12,
-        ["second user"]: 1,
-        ["third user"]: 3
+        user_one: {
+          score: 12
+        },
+        user_two: {
+          score: 2
+        },
+        user_three: {
+          score: 5
+        }
       }
     }
   }
@@ -47,15 +53,16 @@ function fb_readHighScore() {
 
 function fb_displayHighScore(snapshot) {
   let highScores = snapshot.val()
-  HTML_OUTPUT.innerHTML += ("Nina got " + highScores["Nina"] + " points");
+  HTML_OUTPUT.innerHTML += ("user_one got " + highScores["user_one"] + " points");
 }
 
 function fb_readAllScores() {
   console.log("reading high scores");
-  firebase.database().ref("game1/users").orderByValue().once("value", fb_displayAllScores, fb_readError)
+  firebase.database().ref("game1/users").orderByValue().limitToLast(3).once("value", fb_displayAllScores, fb_readError)
 }
 
 function fb_displayAllScores(snapshot) {
+  console.log(snapshot.val());
   snapshot.forEach(fb_showOneScore)
 }
 
@@ -70,21 +77,24 @@ function fb_login() {
       console.log("logged in");
       console.log(user)
       var uid = user.uid;
+      console.log("user added");
+      welcome.innerHTML = "Welcome, " + user.displayName;
+      profilePhoto.src = user.photoURL;
+      firebase.database().ref("game1/users/" + uid + "/email").set(user.email);
+      firebase.database().ref("game1/users/" + uid + "/name").set(user.displayName);
     } else {
       console.log("Not logged in");
       // Using a popup.
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then(function (result) {
-        // This gives you a Google Access Token.
-        var token = result.credential.accessToken;
-        // The signed-in user info.
-        var user = result.user;
+      // This gives you a Google Access Token.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
       });
     }
   });
 }
-
-
 
 function helloWorld() {
   console.log("Running helloWorld()")
