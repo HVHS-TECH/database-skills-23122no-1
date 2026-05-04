@@ -27,18 +27,14 @@ function addHighScores() {
     game1: {
       users: {
         user_one: {
-          score: 12
-        },
+          score: 12,},
         user_two: {
-          score: 2
-        },
+          score: 2,},
         user_three: {
-          score: 5
-        }
+          score: 5}
       }
     }
   }
-
   firebase.database().ref("/").set(highscoreTable);
 }
 
@@ -58,30 +54,36 @@ function fb_displayHighScore(snapshot) {
 
 function fb_readAllScores() {
   console.log("reading high scores");
-  firebase.database().ref("game1/users").orderByValue().limitToLast(3).once("value", fb_displayAllScores, fb_readError)
+  firebase.database().ref("game1/users").orderByValue().once("value", fb_displayAllScores, fb_readError)
 }
 
 function fb_displayAllScores(snapshot) {
   console.log(snapshot.val());
   snapshot.forEach(fb_showOneScore)
 }
-
+let userName;
 function fb_showOneScore(child) {
   console.log(child.val());
-  HTML_OUTPUT.innerHTML += "<p>" + child.key + " got " + child.val() + " points </p>";
+  userName = child.key
+  child.forEach(fb_readUserScore);
+}
+
+function fb_readUserScore(score) {
+  console.log(score.val());
+  HTML_OUTPUT.innerHTML += "<p>" + userName + " got " + score.val() + " points </p>";
 }
 
 function fb_login() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-      console.log("logged in");
-      console.log(user)
+      console.log("Logged in");
+      console.log(user);
       var uid = user.uid;
       console.log("user added");
       welcome.innerHTML = "Welcome, " + user.displayName;
       profilePhoto.src = user.photoURL;
-      firebase.database().ref("game1/users/" + uid + "/email").set(user.email);
-      firebase.database().ref("game1/users/" + uid + "/name").set(user.displayName);
+      let userScore = prompt("What score did you get?");
+      firebase.database().ref("game1/users/" + user.displayName + "/score").set(Number(userScore));
     } else {
       console.log("Not logged in");
       // Using a popup.
@@ -149,4 +151,3 @@ function fb_logDatabaseRead(snapshot) {
     HTML_OUTPUT.innerHTML = snapshot.val();
   }
 }
-
