@@ -61,16 +61,12 @@ function fb_displayAllScores(snapshot) {
   console.log(snapshot.val());
   snapshot.forEach(fb_showOneScore)
 }
-let userName;
-function fb_showOneScore(child) {
-  console.log(child.val());
-  userName = child.key
-  child.forEach(fb_readUserScore);
-}
 
-function fb_readUserScore(score) {
-  console.log(score.val());
-  HTML_OUTPUT.innerHTML += "<p>" + userName + " got " + score.val() + " points </p>";
+function fb_showOneScore(child) {
+  let users = child.val();
+  console.log(users["score"]);
+  console.log(users["email"]);
+  HTML_OUTPUT.innerHTML += "<p>" + users["name"] + " got " + users["score"] + " points. Their email is " + users["email"] + "</p>";
 }
 
 function fb_login() {
@@ -83,7 +79,9 @@ function fb_login() {
       welcome.innerHTML = "Welcome, " + user.displayName;
       profilePhoto.src = user.photoURL;
       let userScore = prompt("What score did you get?");
-      firebase.database().ref("game1/users/" + user.displayName + "/score").set(Number(userScore));
+      firebase.database().ref("game1/users/" + uid + "/score").set(Number(userScore));
+      firebase.database().ref("game1/users/" + uid + "/email").set(user.email);
+      firebase.database().ref("game1/users/" + uid + "/name").set(user.displayName);
     } else {
       console.log("Not logged in");
       // Using a popup.
