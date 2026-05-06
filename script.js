@@ -27,11 +27,14 @@ function addHighScores() {
     game1: {
       users: {
         user_one: {
-          score: 12,},
+          score: 12,
+        },
         user_two: {
-          score: 2,},
+          score: 2,
+        },
         user_three: {
-          score: 5}
+          score: 5
+        }
       }
     }
   }
@@ -44,12 +47,7 @@ function addUser() {
 
 function fb_readHighScore() {
   console.log("reading high score");
-  firebase.database().ref("game1/users").orderByValue().limitToLast(1).once("value", fb_displayHighScore, fb_readError)
-}
-
-function fb_displayHighScore(snapshot) {
-  let highScores = snapshot.val()
-  HTML_OUTPUT.innerHTML += ("user_one got " + highScores["user_one"] + " points");
+  firebase.database().ref("game1/users").orderByValue().limitToLast(1).once("value", fb_displayAllScores, fb_readError)
 }
 
 function fb_readAllScores() {
@@ -58,15 +56,14 @@ function fb_readAllScores() {
 }
 
 function fb_displayAllScores(snapshot) {
-  console.log(snapshot.val());
-  snapshot.forEach(fb_showOneScore)
+  snapshot.forEach(fb_showOneScore);
 }
 
 function fb_showOneScore(child) {
+  console.log(child.val());
   let users = child.val();
-  console.log(users["score"]);
-  console.log(users["email"]);
-  HTML_OUTPUT.innerHTML += "<p>" + users["name"] + " got " + users["score"] + " points. Their email is " + users["email"] + "</p>";
+  HTML_OUTPUT.innerHTML += "<p>" + users["name"] + " got " + users["score"] + " points. </p>";
+  console.log("One high score read");
 }
 
 function fb_login() {
@@ -75,10 +72,9 @@ function fb_login() {
       console.log("Logged in");
       console.log(user);
       var uid = user.uid;
-      console.log("user added");
-      welcome.innerHTML = "Welcome, " + user.displayName;
+      welcome.innerHTML = "Welcome, " + user.displayName + "!";
       profilePhoto.src = user.photoURL;
-      let userScore = prompt("What score did you get?");
+      var userScore = prompt("What score did you get?");
       firebase.database().ref("game1/users/" + uid + "/score").set(Number(userScore));
       firebase.database().ref("game1/users/" + uid + "/email").set(user.email);
       firebase.database().ref("game1/users/" + uid + "/name").set(user.displayName);
@@ -87,10 +83,10 @@ function fb_login() {
       // Using a popup.
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then(function (result) {
-      // This gives you a Google Access Token.
-      var token = result.credential.accessToken;
-      // The signed-in user info.
-      var user = result.user;
+        // This gives you a Google Access Token.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
       });
     }
   });
